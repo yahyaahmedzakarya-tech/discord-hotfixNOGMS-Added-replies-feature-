@@ -1,0 +1,22 @@
+Discord nogms (dc988, 2025-04-04) + replies  -  source project (apktool 2.9.3, decoded with --no-res)
+
+REQUIREMENTS: Java 8+ (JDK, for keytool/jarsigner), apktool 2.9.3 jar.
+
+1) BUILD (run in the folder that CONTAINS this project folder):
+   java -jar apktool_2.9.3.jar b dc -o unsigned.apk
+
+2) CREATE A KEY (once):
+   keytool -genkeypair -keystore my.keystore -storepass android -keypass android -alias my -keyalg RSA -keysize 2048 -sigalg SHA256withRSA -validity 10000 -dname "CN=Me"
+
+3) SIGN (v1 only, enough for Android 4.4.4). Old Android needs SHA1; newer JDKs block it,
+   so if jarsigner says "disabled", use a JDK 8 or add to java.security: jdk.jar.disabledAlgorithms without SHA1.
+   jarsigner -keystore my.keystore -storepass android -keypass android -digestalg SHA1 -sigalg SHA1withRSA unsigned.apk my
+
+   (Alternative if you have build-tools: apksigner sign --ks my.keystore --min-sdk-version 16 --v1-signing-enabled true --v2-signing-enabled false unsigned.apk)
+
+Reply feature code:
+  smali_classes2/x/reply/*            helper classes (ReplyRef, ReplyState, ReplyUi)
+  smali/.../ModelMessage.smali        type 19 (reply) treated as normal message
+  smali/.../RestAPIParams$Message     message_reference field
+  smali/.../MessageQueue.smali        binds reply at enqueue, attaches at send
+  smali/.../WidgetChatListActions     adds the Reply row in the long-press sheet

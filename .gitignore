@@ -1,0 +1,8 @@
+build/
+*.apk
+lib/
+assets/
+res/
+resources.arsc
+original/
+unknown/
